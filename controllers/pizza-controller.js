@@ -1,19 +1,30 @@
-const res = require('express/lib/response');
+// const res = require('express/lib/response');
 const { Pizza } = require('../models');
 
 const pizzaController = {
     // get all pizzas, equivalent to GET /api/pizzas
     getAllPizza(req, res) {
         Pizza.find({})
+            .populate({
+                path: 'comments',
+                select: '-__v'
+            })
+            .select('-__v')
             .then(dbPizzaData => res.json(dbPizzaData))
-            .catch(err => {
-                console.log(err);
-                res.status(400).json(err);
-            });
+                .then(dbPizzaData => res.json(dbPizzaData))
+                .catch(err => {
+                    console.log(err);
+                    res.status(400).json(err);
+                });
     },
     //get one pizza by ID, equivalent to GET /api/pizzas/:id
     getPizzaById({ params }, res) {
         Pizza.findOne({ _id: params.id })
+            .populate({
+                path: 'comments',
+                select: '-__v'
+            })
+            .select('-__v')
             .then(dbPizzaData => {
                 // if no pizza is found, send 404
                 if (!dbPizzaData) {
